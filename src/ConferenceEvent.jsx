@@ -1,29 +1,30 @@
 import { useState } from "react";
 import "./ConferenceEvent.css";
 import TotalCost from "./TotalCost";
+
 import { useSelector, useDispatch } from "react-redux";
 import { incrementQuantity, decrementQuantity } from "./venueSlice";
 
 const NavigationBar = (props) => {
     return (
         <navbar className="navbar_event_conference">
-                <div className="company_logo">Conference Expense Planner</div>
-                <div className="left_navbar">
-                    <div className="nav_links">
-                        <a href="#venue" onClick={() => props.navigateToProducts("#venue")} >
-                            Venue
-                        </a>
-                        <a href="#addons" onClick={() => props.navigateToProducts('#addons')}>
-                            Add-ons
-                        </a>
-                        <a href="#meals" onClick={() => props.navigateToProducts('#meals')}>
-                            Meals
-                        </a>
-                    </div>
-                    <button className="details_button" onClick={() => props.setShowItems(!showItems)}>
-                        Show Details
-                    </button>
+            <div className="company_logo">Conference Expense Planner</div>
+            <div className="left_navbar">
+                <div className="nav_links">
+                    <a href="#venue" onClick={() => props.navigateToProducts("#venue")} >
+                        Venue
+                    </a>
+                    <a href="#addons" onClick={() => props.navigateToProducts('#addons')}>
+                        Add-ons
+                    </a>
+                    <a href="#meals" onClick={() => props.navigateToProducts('#meals')}>
+                        Meals
+                    </a>
                 </div>
+                <button className="details_button" onClick={() => props.setShowItems(!showItems)}>
+                    Show Details
+                </button>
+            </div>
         </navbar>
     );
 };
@@ -84,9 +85,13 @@ const ItemsDisplaySection = (props) => {
                         <div className="img">
                             <img src={item.img} alt={item.name} />
                         </div>ItemsDisplaySection
-                    <div className="text">{item.name}</div>
-                    <div>${item.cost}</div>
-                    <ButtonContainer {...props} />
+                        <div className="text">
+                            {item.name}
+                        </div>
+                        <div>
+                            ${item.cost}
+                        </div>
+                        <ButtonContainer {...props} />
                     </div>
                 ))}
             </div>
@@ -124,6 +129,7 @@ const ItemsDisplaySection = (props) => {
 const ConferenceEvent = () => {
     const [showItems, setShowItems] = useState(false);
     const [numberOfPeople, setNumberOfPeople] = useState(1);
+
     const venueItems = useSelector((state) => state.venue);
     const dispatch = useDispatch();
     const remainingAuditoriumQuantity = 3 - venueItems.find(item => item.name === "Auditorium Hall (Capacity:200)").quantity;
@@ -207,7 +213,7 @@ const ConferenceEvent = () => {
                     /> :
                     <div className="total_amount_detail">
                         <TotalCost
-                            totalCosts={totalCosts}
+                            totalCosts={venueTotalCost}
                             handleClick={handleToggleItems}
                             ItemsDisplay={() => <ItemsDisplay items={items} />} />
                     </div>
