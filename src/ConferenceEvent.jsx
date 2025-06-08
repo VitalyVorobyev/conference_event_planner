@@ -10,7 +10,7 @@ import { toggleMealSelection } from "./mealsSlice";
 
 const NavigationBar = (props) => {
     return (
-        <navbar className="navbar_event_conference">
+        <nav className="navbar_event_conference">
             <div className="company_logo">Conference Expense Planner</div>
             <div className="left_navbar">
                 <div className="nav_links">
@@ -28,7 +28,7 @@ const NavigationBar = (props) => {
                     Show Details
                 </button>
             </div>
-        </navbar>
+        </nav>
     );
 };
 
