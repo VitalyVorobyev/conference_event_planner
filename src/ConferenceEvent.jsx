@@ -40,51 +40,40 @@ NavigationBar.propTypes = {
 
 const ButtonContainer = (props) => {
     const index = props.index;
+    const isAuditorium = props.item.name === "Auditorium Hall (Capacity:200)";
+    const quantity = props.item.quantity;
     return (
         <div className="button_container">
-            {props.venueItems[index].name === "Auditorium Hall (Capacity:200)" ? (
-                <>
-                    <button
-                        className={props.venueItems[index].quantity === 0 ? "btn-warning btn-disabled" : "btn-minus btn-warning"}
-                        onClick={() => props.handleRemoveFromCart(index)}
-                    >
-                        &#8211;
-                    </button>
-                    <span className="selected_count">
-                        {props.venueItems[index].quantity > 0 ? ` ${props.venueItems[index].quantity}` : "0"}
-                    </span>
-                    <button
-                        className={props.remainingAuditoriumQuantity === 0? "btn-success btn-disabled" : "btn-success btn-plus"}
-                        onClick={() => props.handleAddToCart(index)}
-                    >
-                        &#43;
-                    </button>
-                </>
-            ) : (
-                <div className="button_container">
-                    <button
-                        className={props.venueItems[index].quantity ===0 ? " btn-warning btn-disabled" : "btn-warning btn-plus"}
-                        onClick={() => props.handleRemoveFromCart(index)}
-                    >
-                        &#8211;
-                    </button>
-                    <span className="selected_count">
-                        {props.venueItems[index].quantity > 0 ? ` ${props.venueItems[index].quantity}` : "0"}
-                    </span>
-                    <button
-                        className={props.venueItems[index].quantity === 10 ? " btn-success btn-disabled" : "btn-success btn-plus"}
-                        onClick={() => props.handleAddToCart(index)}
-                    >
-                        &#43;
-                    </button>
-                </div>
-            )}
+            <button
+                className={quantity === 0 ? "btn-warning btn-disabled" : "btn-minus btn-warning"}
+                onClick={() => props.handleRemoveFromCart(index)}
+            >
+                &#8211;
+            </button>
+            <span className="selected_count">
+                {quantity > 0 ? ` ${quantity}` : "0"}
+            </span>
+            <button
+                className={
+                    isAuditorium
+                        ? (props.remainingAuditoriumQuantity === 0 ? "btn-success btn-disabled" : "btn-success btn-plus")
+                        : (quantity === 10 ? "btn-success btn-disabled" : "btn-success btn-plus")
+                }
+                onClick={() => props.handleAddToCart(index)}
+            >
+                &#43;
+            </button>
         </div>
     );
 };
 
 ButtonContainer.propTypes = {
-    venueItems: PropTypes.array.isRequired,
+    item: PropTypes.shape({
+        img: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        quantity: PropTypes.number.isRequired
+    }).isRequired,
     index: PropTypes.number.isRequired,
     remainingAuditoriumQuantity: PropTypes.number.isRequired,
     handleRemoveFromCart: PropTypes.func.isRequired,
@@ -104,7 +93,7 @@ const VenueItem = (props) => {
                 ${props.item.cost}
             </div>
             <ButtonContainer
-                venueItems={props.venueItems}
+                item={props.item}
                 index={props.index}
                 remainingAuditoriumQuantity={props.remainingAuditoriumQuantity}
                 handleRemoveFromCart={props.handleRemoveFromCart}
@@ -127,7 +116,7 @@ VenueItem.propTypes = {
     handleAddToCart: PropTypes.func.isRequired
 };
 
-const VanueItems = (props) => {
+const VenueItems = (props) => {
     return (
     <div id="venue" className="venue_container container_main">
         <div className="text">
@@ -149,7 +138,7 @@ const VanueItems = (props) => {
     );
 };
 
-VanueItems.propTypes = {
+VenueItems.propTypes = {
     venueItems: PropTypes.arrayOf(PropTypes.shape({
         img: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
@@ -324,8 +313,9 @@ ItemsDisplay.propTypes = {
 };
 
 const ItemsDisplaySection = (props) => {
+    return (
     <div className="items-information">
-        <VanueItems
+        <VenueItems
             venueItems={props.venueItems}
             venueTotalCost={props.venueTotalCost}
             remainingAuditoriumQuantity={props.remainingAuditoriumQuantity}
@@ -346,6 +336,39 @@ const ItemsDisplaySection = (props) => {
             handleMealSelection={props.handleMealSelection}
         />
     </div>
+    )
+};
+
+ItemsDisplaySection.propTypes = {
+    venueItems: PropTypes.arrayOf(PropTypes.shape({
+        img: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        quantity: PropTypes.number.isRequired
+    })).isRequired,
+    venueTotalCost: PropTypes.number.isRequired,
+    remainingAuditoriumQuantity: PropTypes.number.isRequired,
+    avItems: PropTypes.arrayOf(PropTypes.shape({
+        img: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        quantity: PropTypes.number.isRequired
+    })).isRequired,
+    avTotalCost: PropTypes.number.isRequired,
+    mealsItems: PropTypes.arrayOf(PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        selected: PropTypes.bool.isRequired,
+        numberOfPeople: PropTypes.number
+    })).isRequired,
+    mealsTotalCost: PropTypes.number.isRequired,
+    numberOfPeople: PropTypes.number.isRequired,
+    setNumberOfPeople: PropTypes.func.isRequired,
+    handleMealSelection: PropTypes.func.isRequired,
+    handleRemoveFromCart: PropTypes.func.isRequired,
+    handleAddToCart: PropTypes.func.isRequired,
+    handleIncrementAvQuantity: PropTypes.func.isRequired,
+    handleDecrementAvQuantity: PropTypes.func.isRequired
 };
 
 const ConferenceEvent = () => {
