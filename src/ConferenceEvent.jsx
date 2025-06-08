@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./ConferenceEvent.css";
 import TotalCost from "./TotalCost";
+import PropTypes from "prop-types";
 
 import { useSelector, useDispatch } from "react-redux";
 import { incrementQuantity, decrementQuantity } from "./venueSlice";
@@ -23,7 +24,7 @@ const NavigationBar = (props) => {
                         Meals
                     </a>
                 </div>
-                <button className="details_button" onClick={() => props.setShowItems(!showItems)}>
+                <button className="details_button" onClick={() => props.setShowItems(!props.showItems)}>
                     Show Details
                 </button>
             </div>
@@ -31,7 +32,14 @@ const NavigationBar = (props) => {
     );
 };
 
+NavigationBar.propTypes = {
+    navigateToProducts: PropTypes.func.isRequired,
+    setShowItems: PropTypes.func.isRequired,
+    showItems: PropTypes.bool.isRequired,
+};
+
 const ButtonContainer = (props) => {
+    const index = props.index;
     return (
         <div className="button_container">
             {props.venueItems[index].name === "Auditorium Hall (Capacity:200)" ? (
@@ -75,6 +83,14 @@ const ButtonContainer = (props) => {
     );
 };
 
+ButtonContainer.propTypes = {
+    venueItems: PropTypes.array.isRequired,
+    index: PropTypes.number.isRequired,
+    remainingAuditoriumQuantity: PropTypes.number.isRequired,
+    handleRemoveFromCart: PropTypes.func.isRequired,
+    handleAddToCart: PropTypes.func.isRequired
+};
+
 const VenueItem = (props) => {
     return (
         <div className="venue_main" key={props.index}>
@@ -96,6 +112,19 @@ const VenueItem = (props) => {
             />
         </div>
     );
+};
+
+VenueItem.propTypes = {
+    item: PropTypes.shape({
+        img: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired
+    }).isRequired,
+    index: PropTypes.number.isRequired,
+    venueItems: PropTypes.array.isRequired,
+    remainingAuditoriumQuantity: PropTypes.number.isRequired,
+    handleRemoveFromCart: PropTypes.func.isRequired,
+    handleAddToCart: PropTypes.func.isRequired
 };
 
 const VanueItems = (props) => {
@@ -120,6 +149,19 @@ const VanueItems = (props) => {
     );
 };
 
+VanueItems.propTypes = {
+    venueItems: PropTypes.arrayOf(PropTypes.shape({
+        img: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        quantity: PropTypes.number.isRequired
+    })).isRequired,
+    venueTotalCost: PropTypes.number.isRequired,
+    remainingAuditoriumQuantity: PropTypes.number.isRequired,
+    handleRemoveFromCart: PropTypes.func.isRequired,
+    handleAddToCart: PropTypes.func.isRequired
+};
+
 const AvItem = (props) => {
     return (
         <div className="av_data venue_main" key={props.index}>
@@ -133,12 +175,24 @@ const AvItem = (props) => {
                 ${props.item.cost}
             </div>
             <div className="addons_btn">
-                <button className="btn-warning" onClick={() => props.handleDecrementAvQuantity(index)}> &ndash; </button>
-                <span className="quantity-value">{item.quantity}</span>
-                <button className=" btn-success" onClick={() => props.handleIncrementAvQuantity(index)}> &#43; </button>
+                <button className="btn-warning" onClick={() => props.handleDecrementAvQuantity(props.index)}> &ndash; </button>
+                <span className="quantity-value">{props.item.quantity}</span>
+                <button className=" btn-success" onClick={() => props.handleIncrementAvQuantity(props.index)}> &#43; </button>
             </div>
         </div>
     );
+};
+
+AvItem.propTypes = {
+    item: PropTypes.shape({
+        img: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        quantity: PropTypes.number.isRequired
+    }).isRequired,
+    index: PropTypes.number.isRequired,
+    handleIncrementAvQuantity: PropTypes.func.isRequired,
+    handleDecrementAvQuantity: PropTypes.func.isRequired
 };
 
 const AvItems = (props) => {
@@ -160,6 +214,18 @@ const AvItems = (props) => {
             </div>
         </div>
     );
+};
+
+AvItems.propTypes = {
+    avItems: PropTypes.arrayOf(PropTypes.shape({
+        img: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        quantity: PropTypes.number.isRequired
+    })).isRequired,
+    avTotalCost: PropTypes.number.isRequired,
+    handleIncrementAvQuantity: PropTypes.func.isRequired,
+    handleDecrementAvQuantity: PropTypes.func.isRequired
 };
 
 const MealsItems = (props) => {
@@ -198,11 +264,24 @@ const MealsItems = (props) => {
     );
 };
 
-const ItemsDisplay = ({ items }) => {
-    console.log(items);
+MealsItems.propTypes = {
+    mealsItems: PropTypes.arrayOf(PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        selected: PropTypes.bool.isRequired,
+        numberOfPeople: PropTypes.number
+    })).isRequired,
+    mealsTotalCost: PropTypes.number.isRequired,
+    numberOfPeople: PropTypes.number.isRequired,
+    setNumberOfPeople: PropTypes.func.isRequired,
+    handleMealSelection: PropTypes.func.isRequired
+};
+
+const ItemsDisplay = (props) => {
+    console.log(props.items);
     return (
         <div className="display_box1">
-            {items.length === 0 && <p>No items selected</p>}
+            {props.items.length === 0 && <p>No items selected</p>}
             <table className="table_item_data">
                 <thead>
                     <tr>
@@ -213,17 +292,17 @@ const ItemsDisplay = ({ items }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {items.map((item, index) => (
+                    {props.items.map((item, index) => (
                         <tr key={index}>
                             <td>{item.name}</td>
                             <td>${item.cost}</td>
                             <td>
                                 {item.type === "meals" || item.numberOfPeople
-                                ? ` For ${numberOfPeople} people`
+                                ? ` For ${props.numberOfPeople} people`
                                 : item.quantity}
                             </td>
                             <td>{item.type === "meals" || item.numberOfPeople
-                                ? `${item.cost * numberOfPeople}`
+                                ? `${item.cost * props.numberOfPeople}`
                                 : `${item.cost * item.quantity}`}
                             </td>
                         </tr>
@@ -232,6 +311,16 @@ const ItemsDisplay = ({ items }) => {
             </table>
         </div>
     );
+};
+
+ItemsDisplay.propTypes = {
+    items: PropTypes.arrayOf(PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        cost: PropTypes.number.isRequired,
+        quantity: PropTypes.number,
+        type: PropTypes.string.isRequired
+    })).isRequired,
+    numberOfPeople: PropTypes.number
 };
 
 const ItemsDisplaySection = (props) => {
@@ -401,7 +490,7 @@ const ConferenceEvent = () => {
                         <TotalCost
                             totalCosts={totalCost}
                             handleClick={handleToggleItems}
-                            ItemsDisplay={() => <ItemsDisplay items={items} />} />
+                            ItemsDisplay={() => <ItemsDisplay items={items} numberOfPeople={numberOfPeople} />} />
                     </div>
                 }
             </div>
