@@ -12,7 +12,7 @@
     margin-left: -180px;
     font-size: 24px;
   }
-  
+
   .venue_selection,.addons_selection , .meal_selection {
     display: flex;
     flex-wrap: wrap;
@@ -20,7 +20,7 @@
     width: 90vw;
     margin-left: 250px;
   }
-  
+
   .venue_main {
     display: flex;
     flex-direction: column;
@@ -44,7 +44,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
   }
   .venue_main .text {
     font-size: 30px;
@@ -54,7 +53,7 @@
     margin: 0 10px;
   }
   .main_container{
-    display: flex;    
+    display: flex;
   }
   .items-information {
     display: flex;
@@ -64,7 +63,6 @@
     width: 100vw;
     align-items: center;
     justify-content: center;
-  
   }
   .meal_item {
     display: flex;
@@ -85,7 +83,6 @@
     margin-top: 15px;
     margin-left: 190px;
   }
-  
   .av_data {
     display: flex;
     flex-direction: column;
@@ -97,7 +94,6 @@
     background-color: #f9f9f9;
     color: #000;
   }
-
   .input-container{
     display: flex;
     align-items: center;
@@ -301,8 +297,8 @@
     transition: all 0.3s ease;
     /* background-color: transparent; */
   }
-  
-  
+
+
   .navbar_event_conference{
     position: fixed;
     top: 1px;
