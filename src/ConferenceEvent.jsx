@@ -4,6 +4,7 @@ import TotalCost from "./TotalCost";
 
 import { useSelector, useDispatch } from "react-redux";
 import { incrementQuantity, decrementQuantity } from "./venueSlice";
+import { incrementAvQuantity, decrementAvQuantity } from "./avSlice";
 
 const NavigationBar = (props) => {
     return (
@@ -73,43 +74,109 @@ const ButtonContainer = (props) => {
     );
 };
 
-const ItemsDisplaySection = (props) => {
-    <div className="items-information">
-        <div id="venue" className="venue_container container_main">
+const VenueItem = (props) => {
+    return (
+        <div className="venue_main" key={props.index}>
+            <div className="img">
+                <img src={props.item.img} alt={props.item.name} />
+            </div>
             <div className="text">
-                <h1>Venue Room Selection</h1>
+                {props.item.name}
             </div>
-            <div className="venue_selection">
-                {props.venueItems.map((item, index) => (
-                    <div className="venue_main" key={index}>
-                        <div className="img">
-                            <img src={item.img} alt={item.name} />
-                        </div>ItemsDisplaySection
-                        <div className="text">
-                            {item.name}
-                        </div>
-                        <div>
-                            ${item.cost}
-                        </div>
-                        <ButtonContainer {...props} />
-                    </div>
-                ))}
+            <div>
+                ${props.item.cost}
             </div>
-            <div className="total_cost">
-                Total Cost: ${props.venueTotalCost}
+            <ButtonContainer
+                venueItems={props.venueItems}
+                index={props.index}
+                remainingAuditoriumQuantity={props.remainingAuditoriumQuantity}
+                handleRemoveFromCart={props.handleRemoveFromCart}
+                handleAddToCart={props.handleAddToCart}
+            />
+        </div>
+    );
+};
+
+const VanueItems = (props) => {
+    return (
+    <div id="venue" className="venue_container container_main">
+        <div className="text">
+            <h1>Venue Room Selection</h1>
+        </div>
+        <div className="venue_selection">
+            {props.venueItems.map((item, index) => (
+                <VenueItem key={index} item={item} index={index}
+                    remainingAuditoriumQuantity={props.remainingAuditoriumQuantity}
+                    handleRemoveFromCart={props.handleRemoveFromCart}
+                    handleAddToCart={props.handleAddToCart}
+                />
+            ))}
+        </div>
+        <div className="total_cost">
+            Total Cost: ${props.venueTotalCost}
+        </div>
+    </div>
+    );
+};
+
+const AvItem = (props) => {
+    return (
+        <div className="av_data venue_main" key={props.index}>
+            <div className="img">
+                <img src={props.item.img} alt={props.item.name} />
+            </div>
+            <div className="text">
+                {props.item.name}
+            </div>
+            <div>
+                ${props.item.cost}
+            </div>
+            <div className="addons_btn">
+                <button className="btn-warning" onClick={() => props.handleDecrementAvQuantity(index)}> &ndash; </button>
+                <span className="quantity-value">{item.quantity}</span>
+                <button className=" btn-success" onClick={() => props.handleIncrementAvQuantity(index)}> &#43; </button>
             </div>
         </div>
-        {/*Necessary Add-ons*/}
+    );
+};
+
+const AvItems = (props) => {
+    return (
         <div id="addons" className="venue_container container_main">
             <div className="text">
                 <h1> Add-ons Selection</h1>
             </div>
             <div className="addons_selection">
+                props.avItems.map((item, index) => (
+                    <AvItem key={index} item={item} index={index}
+                        handleIncrementAvQuantity={props.handleIncrementAvQuantity}
+                        handleDecrementAvQuantity={props.handleDecrementAvQuantity}
+                    />
+                ))
             </div>
             <div className="total_cost">
-                Total Cost:
+                Total Cost: {props.avTotalCost}
             </div>
         </div>
+    );
+};
+
+const ItemsDisplaySection = (props) => {
+    <div className="items-information">
+        <VanueItems
+            venueItems={props.venueItems}
+            venueTotalCost={props.venueTotalCost}
+            remainingAuditoriumQuantity={props.remainingAuditoriumQuantity}
+            handleRemoveFromCart={props.handleRemoveFromCart}
+            handleAddToCart={props.handleAddToCart}
+        />
+        {/*Necessary Add-ons*/}
+        <AvItems
+            avItems={props.avItems}
+            avTotalCost={props.avTotalCost}
+            handleIncrementAvQuantity={props.handleIncrementAvQuantity}
+            handleDecrementAvQuantity={props.handleDecrementAvQuantity}
+        />
         {/* Meal Section */}
         <div id="meals" className="venue_container container_main">
             <div className="text">
@@ -131,9 +198,10 @@ const ConferenceEvent = () => {
     const [numberOfPeople, setNumberOfPeople] = useState(1);
 
     const venueItems = useSelector((state) => state.venue);
+    const avItems = useSelector((state) => state.av);
+
     const dispatch = useDispatch();
     const remainingAuditoriumQuantity = 3 - venueItems.find(item => item.name === "Auditorium Hall (Capacity:200)").quantity;
-
 
     const handleToggleItems = () => {
         console.log("handleToggleItems called");
@@ -154,9 +222,11 @@ const ConferenceEvent = () => {
     };
 
     const handleIncrementAvQuantity = (index) => {
+        dispatch(incrementAvQuantity(index));
     };
 
     const handleDecrementAvQuantity = (index) => {
+        dispatch(decrementAvQuantity(index));
     };
 
     const handleMealSelection = (index) => {
@@ -179,10 +249,16 @@ const ConferenceEvent = () => {
             venueItems.forEach((item) => {
                 totalCost += item.cost * item.quantity;
             });
+        } else if (section === "av") {
+            avItems.forEach((item) => {
+                totalCost += item.cost * item.quantity;
+            });
         }
         return totalCost;
     };
     const venueTotalCost = calculateTotalCost("venue");
+    const avTotalCost = calculateTotalCost("av");
+    const totalCost = venueTotalCost + avTotalCost;
 
     const navigateToProducts = (idType) => {
         if (idType == '#venue' || idType == '#addons' || idType == '#meals') {
@@ -204,6 +280,8 @@ const ConferenceEvent = () => {
                     <ItemsDisplaySection
                         venueItems={venueItems}
                         venueTotalCost={venueTotalCost}
+                        avItems={avItems}
+                        avTotalCost={avTotalCost}
                         remainingAuditoriumQuantity={remainingAuditoriumQuantity}
                         handleRemoveFromCart={handleRemoveFromCart}
                         handleAddToCart={handleAddToCart}
@@ -213,7 +291,7 @@ const ConferenceEvent = () => {
                     /> :
                     <div className="total_amount_detail">
                         <TotalCost
-                            totalCosts={venueTotalCost}
+                            totalCosts={totalCost}
                             handleClick={handleToggleItems}
                             ItemsDisplay={() => <ItemsDisplay items={items} />} />
                     </div>
